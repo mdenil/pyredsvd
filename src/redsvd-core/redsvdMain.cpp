@@ -26,7 +26,7 @@
 
 namespace REDSVD {
 
-#define ENABLE_BENCHMARK
+#undef ENABLE_BENCHMARK
 
 template<class Mat, class RetMat>
 void fileProcess(const std::string& inputFileName,

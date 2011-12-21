@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 2.6)
-project(pyresvd)
+cmake_minimum_required(VERSION 2.8)
+project(PYREDSVD_LIBRARY)
 
 
 # ---------- Setup output Directories -------------------------
@@ -25,10 +25,10 @@ SET (CMAKE_ARCHIVE_OUTPUT_DIRECTORY
 
 
 
-set(SOFTWARE_DIR "/home/mdenil/software/")
-set(EIGEN_DIR "${SOFTWARE_DIR}/eigen-3.0.4")
-
-set(CMAKE_MODULE_PATH "${EIGEN_DIR}/cmake")
+set(CMAKE_MODULE_PATH
+    ${CMAKE_MODULE_PATH}
+    ${PYREDSVD_LIBRARY_SOURCE_DIR}/cmake
+    )
 
 ############################ 
 # Find libraries
@@ -36,10 +36,16 @@ set(CMAKE_MODULE_PATH "${EIGEN_DIR}/cmake")
 set(Eigen3_FIND_VERSION 3.0.0)
 find_package(Eigen3)
 
+include(UseCython)
 
+# Make sure the epd headers get included, do this _after_ UseCython
+set(PYTHON_INCLUDE_DIRS
+    /home/mdenil/.local/epd-7.1-2-rh5-x86_64/include/python2.7
+    )
 
-
-
-set(CMAKE_CXX_FLAGS "-Wall -O3")
+set(CMAKE_CXX_FLAGS "-Wall -O3 -I${EIGEN3_INCLUDE_DIR}")
 
 add_subdirectory(src)
+
+
+
