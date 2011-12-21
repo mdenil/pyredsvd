@@ -1,1 +1,4 @@
-add_executable(resvd redsvdFile.cpp  redsvdFile.hpp  redsvd.hpp  redsvdMain.cpp  util.cpp)
+add_executable(resvd
+    redsvdMain.cpp
+    util.cpp
+    )
