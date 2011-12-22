@@ -38,15 +38,14 @@ find_package(Eigen3)
 
 include(UseCython)
 
-# Make sure the epd headers get included, do this _after_ UseCython
-set(PYTHON_INCLUDE_DIRS
-    /home/mdenil/.local/epd-7.1-2-rh5-x86_64/include/python2.7
-    )
+# If we have EPD make sure we use its headers instead of
+# the system python headers.  Do this after UseCython.
+if(NOT "$ENV{EPD_ROOT}" STREQUAL "")
+    set(PYTHON_INCLUDE_DIRS $ENV{EPD_ROOT}/include/python2.7)
+endif()
 
 #set(CMAKE_CXX_FLAGS "-Wall -O3 -I${EIGEN3_INCLUDE_DIR} -DEIGEN_DEFAULT_TO_ROW_MAJOR")
 set(CMAKE_CXX_FLAGS "-Wall -O0 -ggdb -I${EIGEN3_INCLUDE_DIR} -DEIGEN_DEFAULT_TO_ROW_MAJOR")
 
 add_subdirectory(src)
-
-
 
