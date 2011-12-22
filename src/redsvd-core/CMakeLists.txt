@@ -1,3 +1,3 @@
-add_library(resvd-core "SHARED"
+add_library(redsvd-core "SHARED"
     util.cpp
     )

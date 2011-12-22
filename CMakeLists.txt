@@ -43,7 +43,8 @@ set(PYTHON_INCLUDE_DIRS
     /home/mdenil/.local/epd-7.1-2-rh5-x86_64/include/python2.7
     )
 
-set(CMAKE_CXX_FLAGS "-Wall -O3 -I${EIGEN3_INCLUDE_DIR}")
+#set(CMAKE_CXX_FLAGS "-Wall -O3 -I${EIGEN3_INCLUDE_DIR} -DEIGEN_DEFAULT_TO_ROW_MAJOR")
+set(CMAKE_CXX_FLAGS "-Wall -O0 -ggdb -I${EIGEN3_INCLUDE_DIR} -DEIGEN_DEFAULT_TO_ROW_MAJOR")
 
 add_subdirectory(src)
 

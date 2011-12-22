@@ -30,54 +30,52 @@
 
 namespace REDSVD {
 
+template <class Mat>
 class RedSVD {
 public:
     RedSVD() {}
 
-    template <class Mat>
     RedSVD(Mat& A) {
         int r = (A.rows() < A.cols()) ? A.rows() : A.cols();
         run(A, r);
     }
 
-    template <class Mat>
     RedSVD(Mat& A, const int rank) {
         run(A, rank);
     }
 
-    template <class Mat>
     void run(Mat& A, const int rank) {
         if (A.cols() == 0 || A.rows() == 0) return;
         int r = (rank < A.cols()) ? rank : A.cols();
         r = (r < A.rows()) ? r : A.rows();
 
         // Gaussian Random Matrix for A^T
-        Eigen::MatrixXf O(A.rows(), r);
+        Eigen::MatrixXd O(A.rows(), r);
         Util::sampleGaussianMat(O);
 
         // Compute Sample Matrix of A^T
-        Eigen::MatrixXf Y = A.transpose() * O;
+        Eigen::MatrixXd Y = A.transpose() * O;
 
         // Orthonormalize Y
         Util::processGramSchmidt(Y);
 
         // Range(B) = Range(A^T)
-        Eigen::MatrixXf B = A * Y;
+        Eigen::MatrixXd B = A * Y;
 
         // Gaussian Random Matrix
-        Eigen::MatrixXf P(B.cols(), r);
+        Eigen::MatrixXd P(B.cols(), r);
         Util::sampleGaussianMat(P);
 
         // Compute Sample Matrix of B
-        Eigen::MatrixXf Z = B * P;
+        Eigen::MatrixXd Z = B * P;
 
         // Orthonormalize Z
         Util::processGramSchmidt(Z);
 
         // Range(C) = Range(B)
-        Eigen::MatrixXf C = Z.transpose() * B;
+        Eigen::MatrixXd C = Z.transpose() * B;
 
-        Eigen::JacobiSVD<Eigen::MatrixXf> svdOfC(C, Eigen::ComputeThinU | Eigen::ComputeThinV);
+        Eigen::JacobiSVD<Eigen::MatrixXd> svdOfC(C, Eigen::ComputeThinU | Eigen::ComputeThinV);
 
         // C = USV^T
         // A = Z * U * S * V^T * Y^T()
@@ -86,22 +84,22 @@ public:
         matV_ = Y * svdOfC.matrixV();
     }
 
-    const Eigen::MatrixXf& matrixU() const {
+    const Eigen::MatrixXd& matrixU() const {
         return matU_;
     }
 
-    const Eigen::VectorXf& singularValues() const {
+    const Eigen::VectorXd& singularValues() const {
         return matS_;
     }
 
-    const Eigen::MatrixXf& matrixV() const {
+    const Eigen::MatrixXd& matrixV() const {
         return matV_;
     }
 
 private:
-    Eigen::MatrixXf matU_;
-    Eigen::VectorXf matS_;
-    Eigen::MatrixXf matV_;
+    Eigen::MatrixXd matU_;
+    Eigen::VectorXd matS_;
+    Eigen::MatrixXd matV_;
 };
 
 class RedSymEigen {
@@ -120,33 +118,33 @@ public:
         r = (r < A.rows()) ? r : A.rows();
 
         // Gaussian Random Matrix
-        Eigen::MatrixXf O(A.rows(), r);
+        Eigen::MatrixXd O(A.rows(), r);
         Util::sampleGaussianMat(O);
 
         // Compute Sample Matrix of A
-        Eigen::MatrixXf Y = A.transpose() * O;
+        Eigen::MatrixXd Y = A.transpose() * O;
 
         // Orthonormalize Y
         Util::processGramSchmidt(Y);
 
-        Eigen::MatrixXf B = Y.transpose() * A * Y;
-        Eigen::SelfAdjointEigenSolver<Eigen::MatrixXf> eigenOfB(B);
+        Eigen::MatrixXd B = Y.transpose() * A * Y;
+        Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigenOfB(B);
 
         eigenValues_ = eigenOfB.eigenvalues();
         eigenVectors_ = Y * eigenOfB.eigenvectors();
     }
 
-    const Eigen::MatrixXf& eigenVectors() const {
+    const Eigen::MatrixXd& eigenVectors() const {
         return eigenVectors_;
     }
 
-    const Eigen::VectorXf& eigenValues() const {
+    const Eigen::VectorXd& eigenValues() const {
         return eigenValues_;
     }
 
 private:
-    Eigen::VectorXf eigenValues_;
-    Eigen::MatrixXf eigenVectors_;
+    Eigen::VectorXd eigenValues_;
+    Eigen::MatrixXd eigenVectors_;
 };
 
 class RedPCA {
@@ -160,24 +158,24 @@ public:
 
     template <class Mat>
     void run(const Mat& A, const int rank) {
-        RedSVD redsvd;
+        RedSVD<Mat> redsvd;
         redsvd.run(A, rank);
-        const Eigen::VectorXf& S = redsvd.singularValues();
+        const Eigen::VectorXd& S = redsvd.singularValues();
         principalComponents_ = redsvd.matrixV();
         scores_              = redsvd.matrixU() * S.asDiagonal();
     }
 
-    const Eigen::MatrixXf& principalComponents() const {
+    const Eigen::MatrixXd& principalComponents() const {
         return principalComponents_;
     }
 
-    const Eigen::MatrixXf& scores() const {
+    const Eigen::MatrixXd& scores() const {
         return scores_;
     }
 
 private:
-    Eigen::MatrixXf principalComponents_;
-    Eigen::MatrixXf scores_;
+    Eigen::MatrixXd principalComponents_;
+    Eigen::MatrixXd scores_;
 };
 
 }

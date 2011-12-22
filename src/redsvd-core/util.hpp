@@ -29,17 +29,20 @@
 
 namespace REDSVD {
 
-typedef Eigen::SparseMatrix<float, Eigen::RowMajor> SMatrixXf;
+typedef Eigen::SparseMatrix<double, Eigen::RowMajor> SMatrixXd;
 
 class Util {
 public:
-    static void sampleGaussianMat(Eigen::MatrixXf& x);
-    static void processGramSchmidt(Eigen::MatrixXf& mat);
+    static void sampleGaussianMat(Eigen::MatrixXd& x);
+    static void processGramSchmidt(Eigen::MatrixXd& mat);
     static double getSec();
 
 private:
-    static void sampleTwoGaussian(float& f1, float& f2);
+    static void sampleTwoGaussian(double& f1, double& f2);
 };
+
+
+SMatrixXd *fill_sparse_matrix(SMatrixXd *A, int nnz, int *I, int *J, double *V);
 
 }
 
