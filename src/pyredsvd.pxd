@@ -14,7 +14,12 @@ cdef extern from "Eigen/Dense" namespace "Eigen":
 
 cdef extern from "redsvd.hpp" namespace "REDSVD":
     cdef cppclass RedSVD[Mat]:
-        RedSVD(Mat&, int)
+        RedSVD(Mat&,
+                int,
+                Map[MatrixXd] *,
+                Map[VectorXd] *,
+                Map[MatrixXd] *
+                )
 
         MatrixXd& matrixU()
         VectorXd& singularValues()

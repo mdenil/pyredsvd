@@ -33,14 +33,24 @@ namespace REDSVD {
 template <class Mat>
 class RedSVD {
 public:
-    RedSVD() {}
+    typedef Eigen::Map<Eigen::MatrixXd> ResultMat;
+    typedef Eigen::Map<Eigen::VectorXd> ResultVec;
 
-    RedSVD(Mat& A) {
-        int r = (A.rows() < A.cols()) ? A.rows() : A.cols();
-        run(A, r);
-    }
+private:
+    ResultMat *matU_;
+    ResultVec *matS_;
+    ResultMat *matV_;
 
-    RedSVD(Mat& A, const int rank) {
+public:
+    /**
+     * U, S and V need to have the correct size or bad things will happen.
+     * (they can probably be bigger than needed without trouble)
+     */
+    RedSVD(Mat& A, const int rank, ResultMat *U, ResultVec *S, ResultMat *V)
+        : matU_(U),
+          matS_(S),
+          matV_(V)
+    {
         run(A, rank);
     }
 
@@ -79,9 +89,9 @@ public:
 
         // C = USV^T
         // A = Z * U * S * V^T * Y^T()
-        matU_ = Z * svdOfC.matrixU();
-        matS_ = svdOfC.singularValues();
-        matV_ = Y * svdOfC.matrixV();
+        *matU_ = Z * svdOfC.matrixU();
+        *matS_ = svdOfC.singularValues();
+        *matV_ = Y * svdOfC.matrixV();
     }
 
     const Eigen::MatrixXd& matrixU() const {
@@ -95,11 +105,6 @@ public:
     const Eigen::MatrixXd& matrixV() const {
         return matV_;
     }
-
-private:
-    Eigen::MatrixXd matU_;
-    Eigen::VectorXd matS_;
-    Eigen::MatrixXd matV_;
 };
 
 class RedSymEigen {
