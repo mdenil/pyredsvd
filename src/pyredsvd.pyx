@@ -5,34 +5,26 @@ import cython
 import numpy as np
 cimport numpy as np
 from cython.operator cimport dereference as deref
-from cpython cimport bool
+from libc.stdlib cimport malloc, free
+from libc.string cimport memcpy
 
-cdef extern from "Eigen/Dense" namespace "Eigen":
-    cdef cppclass VectorXd:
-        VectorXd()
-        double *data()
+from pyredsvd import *
 
-    cdef cppclass MatrixXd:
-        MatrixXd()
-        double *data()
+# !! Important for using numpy's C api
+np.import_array()
 
-    cdef cppclass Map[T]:
-        Map(double*, int, int)
-        double operator()(int, int)
+def give_me_a_matrix():
+    # http://blog.enthought.com/python/numpy-arrays-with-pre-allocated-memory/
+    #
+    # How to get data back from numpy:
+    # http://groups.google.com/group/cython-users/browse_thread/thread/22dd22be38e7685f/4d73e90f7fd59c26
 
-cdef extern from "redsvd.hpp" namespace "REDSVD":
-    cdef cppclass RedSVD[Mat]:
-        RedSVD(Mat&, int)
+    cdef np.npy_intp sz = 100
+    cdef object pyobj = np.PyArray_SimpleNew(1, &sz, np.NPY_FLOAT64)
 
-        MatrixXd& matrixU()
-        VectorXd& singularValues()
-        MatrixXd& matrixV()
+    cdef double *internal_data = <double*>np.PyArray_DATA(pyobj)
 
-cdef extern from "util.hpp" namespace "REDSVD":
-    cdef cppclass SMatrixXd:
-        SMatrixXd(int n, int m)
-
-    cdef SMatrixXd *fill_sparse_matrix(SMatrixXd *A, int nnz, int *I_data, int *J_data, double *V_data)
+    return <object>pyobj
 
 def dense_redsvd(np.ndarray[double, ndim=2, mode='c'] A, int rank):
     cdef double* A_data = <double*>A.data
@@ -111,9 +103,6 @@ def sparse_redsvd(
 ############################
 # Utility functions for making raw arrays into ndarrays
 ############################
-
-cdef extern from "stdio.h":
-    cdef void *memcpy (void *dest, void *src, size_t size)
 
 cdef inline np.ndarray array_d(double *data, int n, int m):
     #cdef ndarray ary2 = PyArray_ZEROS(1, &size, 12, 0)

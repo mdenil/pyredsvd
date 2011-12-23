@@ -105,4 +105,5 @@ SMatrixXd *fill_sparse_matrix(SMatrixXd *A, int nnz, int *I, int *J, double *V)
     return A;
 }
 
+
 }

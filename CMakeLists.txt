@@ -35,7 +35,10 @@ set(CMAKE_MODULE_PATH
 
 set(Eigen3_FIND_VERSION 3.0.0)
 find_package(Eigen3)
+include_directories(${EIGEN3_INCLUDE_DIR})
 
+find_package(PythonLibs)
+find_program(PYTHON_EXECUTABLE NAMES python)
 include(UseCython)
 
 # If we have EPD make sure we use its headers instead of
@@ -44,8 +47,11 @@ if(NOT "$ENV{EPD_ROOT}" STREQUAL "")
     set(PYTHON_INCLUDE_DIRS $ENV{EPD_ROOT}/include/python2.7)
 endif()
 
-#set(CMAKE_CXX_FLAGS "-Wall -O3 -I${EIGEN3_INCLUDE_DIR} -DEIGEN_DEFAULT_TO_ROW_MAJOR")
-set(CMAKE_CXX_FLAGS "-Wall -O0 -ggdb -I${EIGEN3_INCLUDE_DIR} -DEIGEN_DEFAULT_TO_ROW_MAJOR")
+find_package(Numpy)
+include_directories(${NUMPY_INCLUDE_DIR})
+
+#set(CMAKE_CXX_FLAGS "-Wall -O3 -DEIGEN_DEFAULT_TO_ROW_MAJOR")
+set(CMAKE_CXX_FLAGS "-Wall -O0 -ggdb -DEIGEN_DEFAULT_TO_ROW_MAJOR")
 
 add_subdirectory(src)
 
