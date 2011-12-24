@@ -1,3 +1,7 @@
 This is a python library for fast randomized PCA.
 
 The original C++ code comes from here: http://code.google.com/p/redsvd/wiki/English
+
+-----
+
+Some stupidly naive tests reveal that this code is marginally slower than scikit.learn's randomized PCA for dense matrices, and much slower for sparse matrices (presumably because I need to copy sparse matrices to use Eigen).
